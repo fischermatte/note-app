@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +15,7 @@ export class NoteService {
       {userId: 2, text: 'Note 2'},
       {userId: 2, text: 'Note 3'}
     ];
-    this.subject = new ReplaySubject<Note[]>();
-    this.subject.next(this.notes);
+    this.subject = new BehaviorSubject<Note[]>(this.notes);
   }
 
   getNotes(): Observable<Note[]> {

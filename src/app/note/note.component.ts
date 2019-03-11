@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {NoteService} from './note.service';
 import {UserService} from '../user/user.service';
-import {tap} from 'rxjs/operators';
+import {combineLatest} from 'rxjs';
+import {map, mergeMap, tap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-note',
@@ -26,9 +27,18 @@ export class NoteComponent implements OnInit {
   notes: Note[];
 
   constructor(private noteService: NoteService, private userService: UserService) {
-    noteService.getNotes().pipe(
-      tap(notes => this.loadUsers(notes))
-    ).subscribe(notes => this.notes = notes);
+    // noteService.getNotes().pipe(
+    // mergeMap(notes => {
+    //   return this.userService.getUsers().pipe(
+    //     tap(users => this.loadUserInfo(notes, users)),
+    //     map(() => notes)
+    //   );
+    // })
+    // ).subscribe(notes => this.notes = notes);
+    combineLatest([this.noteService.getNotes(), this.userService.getUsers()])
+      .subscribe(results => {
+        this.notes = this.loadUserInfo(results[0], results[1]);
+      });
   }
 
   ngOnInit() {
@@ -42,12 +52,12 @@ export class NoteComponent implements OnInit {
     this.note = '';
   }
 
-  private loadUsers(notes: Note[]) {
-    return notes.forEach(note => {
-      this.userService.getUserById(note.userId).subscribe(user => {
-        note.firstname = user.firstname;
-        note.lastname = user.lastname;
-      });
+  private loadUserInfo(notes: Note[], users: User[]): Note[] {
+    notes.forEach(note => {
+      const user = users.filter(u => u.id === note.userId)[0];
+      note.firstname = user.firstname;
+      note.lastname = user.lastname;
     });
+    return notes;
   }
 }
