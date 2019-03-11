@@ -5,7 +5,7 @@ import {Component, OnInit} from '@angular/core';
   template: `
     <h2>Notes</h2>
     <form #f="ngForm" (ngSubmit)="addUser()" novalidate>
-      <input [ngModel]="note" name="noteInput">
+      <input name="noteInput">
       <button>Add Note</button>
     </form>
     <ul>
