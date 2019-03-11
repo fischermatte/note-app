@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject, Subject} from 'rxjs';
+import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -21,5 +21,9 @@ export class UserService {
 
   getUsers(): Observable<User[]> {
     return this.subject.asObservable();
+  }
+
+  getUserById(id: number): Observable<User> {
+    return of(this.users.filter(user => user.id === id)[0]);
   }
 }
